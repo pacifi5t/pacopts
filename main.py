@@ -25,20 +25,34 @@ def parse_info(info: list[str]):
             break
 
     out_list = []
-    first = info[begin].split(":")[1].strip()
+    lst = info[begin].split(":")
+    first = lst[1].strip()
 
     if first != "None":
-        out_list.append(first)
+        try:
+            reason = lst[2]
+        except:
+            reason = ""
+        out_list.append(first + ":" + reason)
     else:
         return []
 
     for j in range(begin + 1, end):
         out_list.append(info[j].strip())
+
+    #TODO: add filtration for [installed]
     return out_list
 
 
 def main():
-    print(get_package_list())
+    lst = get_package_list()
+    for el in lst:
+        deps = parse_info(get_info(el))
+        if len(deps) != 0:
+            print(el)
+            for d in deps:
+                print("\t" + d)
+            print("\n")
 
 
 if __name__ == "__main__":
