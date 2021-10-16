@@ -1,4 +1,8 @@
 import subprocess
+import os
+
+my_env = os.environ.copy()
+my_env["LANG"] = "en_US.utf8"
 
 
 def get_package_list():
@@ -12,7 +16,7 @@ def get_package_list():
 
 def get_info(package_name: str):
     return subprocess.run(["pacman", "-Qi", package_name],
-                          stdout=subprocess.PIPE).stdout.decode("utf-8").split("\n")
+                          stdout=subprocess.PIPE, env=my_env).stdout.decode("utf-8").split("\n")
 
 
 def parse_info(info: list[str]):
@@ -40,7 +44,7 @@ def parse_info(info: list[str]):
     for j in range(begin + 1, end):
         out_list.append(info[j].strip())
 
-    #TODO: add filtration for [installed]
+    # TODO: add filtration for [installed]
     return out_list
 
 
