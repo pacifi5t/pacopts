@@ -4,6 +4,8 @@ import os
 my_env = os.environ.copy()
 my_env["LANG"] = "en_US.utf8"
 
+filter_regex = r"\[installed\]"
+
 
 def get_package_list():
     res = subprocess.run(["pacman", "-Q"], stdout=subprocess.PIPE)
@@ -15,8 +17,15 @@ def get_package_list():
 
 
 def get_info(package_name: str):
-    return subprocess.run(["pacman", "-Qi", package_name],
-                          stdout=subprocess.PIPE, env=my_env).stdout.decode("utf-8").split("\n")
+    return (
+        subprocess.run(
+            ["pacman", "-Qi", package_name],
+            stdout=subprocess.PIPE,
+            env=my_env,
+        )
+        .stdout.decode("utf-8")
+        .split("\n")
+    )
 
 
 def parse_info(info: list[str]):
@@ -32,19 +41,23 @@ def parse_info(info: list[str]):
     lst = info[begin].split(":")
     first = lst[1].strip()
 
-    if first != "None":
-        try:
-            reason = lst[2]
-        except:
-            reason = ""
-        out_list.append(first + ":" + reason)
-    else:
+    if first == "None":
         return []
 
-    for j in range(begin + 1, end):
-        out_list.append(info[j].strip())
+    try:
+        reason = lst[2].strip()
+    except:
+        reason = ""
 
-    # TODO: add filtration for [installed]
+    if (first + reason).rfind("[installed]") == -1:
+        out_list.append(first + ": " + reason)
+
+    for j in range(begin + 1, end):
+        temp = info[j].strip()
+
+        if temp.rfind("[installed]") == -1:
+            out_list.append(temp)
+
     return out_list
 
 
