@@ -3,16 +3,17 @@ import os
 
 my_env = os.environ.copy()
 my_env["LANG"] = "en_US.utf8"
+my_env["LC_ALL"] = 'C'
 
 filter_regex = r"\[installed\]"
 
 
 def get_package_list():
-    res = subprocess.run(["pacman", "-Q"], stdout=subprocess.PIPE)
-    list = res.stdout.decode("utf-8").split("\n")
+    res = subprocess.run(["pacman", "-Q"], stdout=subprocess.PIPE, env=my_env)
+    lst = res.stdout.decode("utf-8").split("\n")
     parsed_list = []
-    for i in range(0, len(list) - 2):
-        parsed_list.append(list[i].split(" ")[0])
+    for i in range(0, len(lst) - 2):
+        parsed_list.append(lst[i].split(" ")[0])
     return parsed_list
 
 
@@ -29,6 +30,7 @@ def get_info(package_name: str):
 
 
 def parse_info(info: list[str]):
+    begin = end = None
     for i in range(0, len(info)):
         each = info[i].split(":")[0]
         if each.startswith("Optional Deps"):
@@ -37,6 +39,8 @@ def parse_info(info: list[str]):
             end = i
             break
 
+    if (begin is None) or (end is None):
+        raise RuntimeError("Either the packages don't have an optional deps (unlikely) or some error happened")
     out_list = []
     lst = info[begin].split(":")
     first = lst[1].strip()
@@ -46,16 +50,16 @@ def parse_info(info: list[str]):
 
     try:
         reason = lst[2].strip()
-    except:
+    except (IndexError, AttributeError):
         reason = ""
 
-    if (first + reason).rfind("[installed]") == -1:
+    if "[installed]" not in (first + reason):
         out_list.append(first + ": " + reason)
 
     for j in range(begin + 1, end):
         temp = info[j].strip()
 
-        if temp.rfind("[installed]") == -1:
+        if "[installed]" not in temp:
             out_list.append(temp)
 
     return out_list
@@ -73,4 +77,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nExit")
