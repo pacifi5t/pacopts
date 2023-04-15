@@ -51,12 +51,12 @@ def parse_info(info: list[str]):
         return []
 
     try:
-        reason = lst[2].strip()
+        description = ''.join(lst[2::1]).strip()
     except (IndexError, AttributeError):
-        reason = ""
+        description = ""
 
-    if "[installed]" not in (first + reason):
-        out_list.append(first + ": " + reason)
+    if "[installed]" not in (first + description):
+        out_list.append(first + ": " + description)
 
     for j in range(begin + 1, end):
         temp = info[j].strip()
