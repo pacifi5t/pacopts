@@ -1,6 +1,7 @@
 import subprocess
 import os
 from termcolor import colored
+import multiprocessing
 
 env = os.environ.copy()
 env['LANG'] = 'en_US.utf8'
@@ -50,8 +51,11 @@ def print_output(optional_deps, package_name):
 
 def main():
     package_list = get_package_list()
-    for package_name in package_list:
-        optional_deps = get_optional_deps(package_name)
+
+    with multiprocessing.Pool() as pool:
+        results = pool.map(get_optional_deps, package_list)
+
+    for optional_deps, package_name in zip(results, package_list):
         print_output(optional_deps, package_name)
 
 
