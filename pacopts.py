@@ -50,17 +50,17 @@ def print_output(optional_deps, package_name):
 
 
 def main():
-    package_list = get_package_list()
+    try:
+        package_list = get_package_list()
 
-    with multiprocessing.Pool() as pool:
-        results = pool.map(get_optional_deps, package_list)
+        with multiprocessing.Pool() as pool:
+            results = pool.map(get_optional_deps, package_list)
 
-    for optional_deps, package_name in zip(results, package_list):
-        print_output(optional_deps, package_name)
+        for optional_deps, package_name in zip(results, package_list):
+            print_output(optional_deps, package_name)
+    except KeyboardInterrupt:
+        print('\nExit by keyboard interrupt')
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('\nExit by keyboard interrupt')
+    main()
