@@ -1,18 +1,13 @@
-[tool.poetry]
+[project]
 name = "pacopts"
 version = "0.1.0"
-description = ""
-authors = ["Andrii Derhach <thequasar7@gmail.com>"]
-license = "GPL-3.0-or-later"
+description = "A simple script to list optional dependencies for pacman packages."
 readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["termcolor>=2.4.0"]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-termcolor = "^2.4.0"
+[project.license]
+file = "LICENSE"
 
-[tool.poetry.scripts]
-pacopts = 'pacopts:main'
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.scripts]
+pacopts = "pacopts:main"

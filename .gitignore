@@ -1,11 +1,17 @@
-__pycache__
-*__pycache__
-*.pyc
-/.venv
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
 
-/dist
+# Virtual environments
+.venv
 
+# IDEs
 .idea
 .vscode
 
+# Other
 .directory
